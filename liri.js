@@ -4,36 +4,43 @@ var keys = require("./keys.js");
 var spotify = new Spotify(keys.spotify);
 var axios = require('axios');
 var moment = require('moment');
+moment.suppressDeprecationWarnings = true;
 var fs = require('fs');
 
 var term = process.argv[2];
 var name = process.argv.slice(3).join(' ');
 
-function doThing(){
-fs.readFile("random.txt","utf8", function read(err, data) {
-    if (err) {
-        throw err;
-    }
-    var term = data.slice(data.indexOf('"')+1,data.lastIndexOf('"'));
+// Initial run
+app(term);
 
-    console.log(str);
-});
+// DO-WHAT-IT-SAYS
+function doThing() {
+    fs.readFile("random.txt", "utf8", function read(err, data) {
+        if (err) {
+            throw err;
+        }
+        term = data.slice(0, data.indexOf(','));
+        name = data.slice(data.indexOf('"') + 1, data.lastIndexOf('"'));
+        app(term);
+    });
 }
 
 // Argument Check
-switch (term) {
-    case "concert-this":
-        bandSearch();
-        break;
-    case "spotify-this-song":
-        spotifySearch();
-        break;
-    case "movie-this":
-        movieSearch();
-        break;
-    case "do-what-it-says":
-        spotifySearch();
-        break;
+function app(str) {
+    switch (str) {
+        case "concert-this":
+            bandSearch();
+            break;
+        case "spotify-this-song":
+            spotifySearch();
+            break;
+        case "movie-this":
+            movieSearch();
+            break;
+        case "do-what-it-says":
+            doThing();
+            break;
+    }
 }
 
 // CONCERT-THIS
@@ -53,13 +60,11 @@ function bandSearch() {
 
                 "\nDate: " + (moment(response.data[0].datetime).format("MM/DD/YYYY")) +
 
-                "\n---------------------------------------"
+                "\n---------------------------------------\n"
             );
         }
     ).catch(function (error) {
         if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
             console.log("---------------Data---------------");
             console.log(error.response.data);
             console.log("---------------Status---------------");
@@ -67,11 +72,8 @@ function bandSearch() {
             console.log("---------------Status---------------");
             console.log(error.response.headers);
         } else if (error.request) {
-            // The request was made but no response was received
-            // `error.request` is an object that comes back with details pertaining to the error that occurred.
             console.log(error.request);
         } else {
-            // Something happened in setting up the request that triggered an Error
             console.log("Error", error.message);
         }
         console.log(error.config);
@@ -81,6 +83,10 @@ function bandSearch() {
 
 // SPOTIFY-THIS-SONG
 function spotifySearch() {
+    if(name == ''){
+        name = "The Sign";
+    }
+
     spotify.search({
         type: 'track',
         query: name
@@ -104,13 +110,16 @@ function spotifySearch() {
 
             "\nAblum: " + response.tracks.items[0].album.name +
 
-            "\n---------------------------------------"
+            "\n--------------------------------------\n"
         );
     });
 }
 
 // MOVIE-THIS
 function movieSearch() {
+    if(name == ''){
+        name = "Mr. Nobody";
+    }
     var movieURL = "http://www.omdbapi.com/?apikey=trilogy&t=" + name
 
     axios.get(movieURL).then(
@@ -135,13 +144,11 @@ function movieSearch() {
                 "\nActors: " + response.data.Actors
 
                 +
-                "\n---------------------------------------"
+                "\n---------------------------------------\n"
             );
         }
     ).catch(function (error) {
         if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
             console.log("---------------Data---------------");
             console.log(error.response.data);
             console.log("---------------Status---------------");
@@ -149,11 +156,8 @@ function movieSearch() {
             console.log("---------------Status---------------");
             console.log(error.response.headers);
         } else if (error.request) {
-            // The request was made but no response was received
-            // `error.request` is an object that comes back with details pertaining to the error that occurred.
             console.log(error.request);
         } else {
-            // Something happened in setting up the request that triggered an Error
             console.log("Error", error.message);
         }
         console.log(error.config);
