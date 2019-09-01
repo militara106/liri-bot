@@ -1,6 +1,19 @@
 # liri-bot
 Node app used to search for band concerts, songs on spotify, movies from imdb, or run a search from a text file.
 
+REQUIRED NODE PACKAGES:
+node-spotify-api
+axios
+moment
+fs
+dotnv with a .env file with the content:
+----------------------
+Spotify API keys
+
+SPOTIFY_ID=[YOUR SPOTIFY ID]
+SPOTIFY_SECRET=[YOUR SPOTIFY SECRET]
+----------------------
+
 TO RUN:
 Type "node liri.js [search command] [movie/band/song name]"
 without brackets or quotations
@@ -47,4 +60,5 @@ Exammple:
 spotify-this-song, "Rich Girl"
 ----------------------
 Example of App usage:
-![example] (example.png)
+
+<img src="example.png" alt="example">
